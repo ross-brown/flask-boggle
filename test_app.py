@@ -32,7 +32,13 @@ class BoggleAppTestCase(TestCase):
         """Test starting a new game."""
 
         with self.client as client:
-            ...
+            response = client.post("/api/new-game")
+            resp_json = response.get_json()
+
+            self.assertIsInstance(resp_json["game_id"], str)
+            self.assertIsInstance(resp_json["board"], list)
+            self.assertIn(resp_json["game_id"], games)
+
             # make a post request to /api/new-game
             # get the response body as json using .get_json()
             # test that the game_id is a string
@@ -43,7 +49,43 @@ class BoggleAppTestCase(TestCase):
         """Test if word is valid"""
 
         with self.client as client:
-            ...
+            response_new_game = client.post("/api/new-game")
+            resp_json = response_new_game.get_json()
+
+            game_id = resp_json["game_id"]
+            game = games[game_id]
+
+            game.board = [
+                ["G", "O", "T", "Y", "B"],
+                ["C", "S", "U", "P", "M"],
+                ["P", "I", "C", "H", "J"],
+                ["E", "A", "V", "U", "S"],
+                ["H", "T", "Y", "R", "W"]]
+
+            # POST with valid word
+            repsonse_score = client.post("/api/score-word",
+                                         json={'word': 'GOT',
+                                               'game_id': game_id})
+            data = repsonse_score.get_json()
+
+            self.assertEqual({'result': 'ok'}, data)
+
+            # POST with valid word NOT on board
+            repsonse_score = client.post("/api/score-word",
+                                         json={'word': 'RUN',
+                                               'game_id': game_id})
+            data = repsonse_score.get_json()
+
+            self.assertEqual({'result': 'not-on-board'}, data)
+
+            # POST with invalid word
+            repsonse_score = client.post("/api/score-word",
+                                         json={'word': 'FDGHSJ',
+                                               'game_id': game_id})
+            data = repsonse_score.get_json()
+
+            self.assertEqual({'result': 'not-word'}, data)
+
             # make a post request to /api/new-game
             # get the response body as json using .get_json()
             # find that game in the dictionary of games (imported from app.py above)

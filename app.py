@@ -26,4 +26,32 @@ def new_game():
     game = BoggleGame()
     games[game_id] = game
 
-    return {"gameId": "need-real-id", "board": "need-real-board"}
+    return jsonify({"game_id": game_id, "board": game.board})
+
+
+@app.post("/api/score-word")
+def score_word():
+    """Check if the word is legal and return JSON: {result}."""
+
+    word = request.json["word"]
+    game_id = request.json["game_id"]
+    game = games[game_id]
+
+    is_word = game.is_word_in_word_list(word)
+    is_findable = game.check_word_on_board(word)
+
+    if not is_word:
+        result = "not-word"
+    elif not is_findable:
+        result = "not-on-board"
+    else:
+        result = "ok"
+
+    return jsonify({"result": result})
+
+    # the request will have JSON with game_id and the word (can get with request.json)
+    # check if the word is legal (in the word list AND findable on the board)
+    # return JSON
+    # if not a word ---> {result: "not-word"}
+    # if not on board -> {result: "not-on-board"}
+    # if valid word ---> {result: "ok"}
