@@ -37,6 +37,7 @@ class BoggleAppTestCase(TestCase):
 
             self.assertIsInstance(resp_json["game_id"], str)
             self.assertIsInstance(resp_json["board"], list)
+            self.assertIsInstance(resp_json["board"][0], list)
             self.assertIn(resp_json["game_id"], games)
 
             # make a post request to /api/new-game
@@ -49,8 +50,8 @@ class BoggleAppTestCase(TestCase):
         """Test if word is valid"""
 
         with self.client as client:
-            response_new_game = client.post("/api/new-game")
-            resp_json = response_new_game.get_json()
+            response = client.post("/api/new-game")
+            resp_json = response.get_json()
 
             game_id = resp_json["game_id"]
             game = games[game_id]
@@ -63,26 +64,26 @@ class BoggleAppTestCase(TestCase):
                 ["H", "T", "Y", "R", "W"]]
 
             # POST with valid word
-            repsonse_score = client.post("/api/score-word",
-                                         json={'word': 'GOT',
-                                               'game_id': game_id})
-            data = repsonse_score.get_json()
+            repsonse = client.post("/api/score-word",
+                                   json={'word': 'GOT',
+                                         'game_id': game_id})
+            data = repsonse.get_json()
 
             self.assertEqual({'result': 'ok'}, data)
 
             # POST with valid word NOT on board
-            repsonse_score = client.post("/api/score-word",
-                                         json={'word': 'RUN',
-                                               'game_id': game_id})
-            data = repsonse_score.get_json()
+            repsonse = client.post("/api/score-word",
+                                   json={'word': 'RUN',
+                                         'game_id': game_id})
+            data = repsonse.get_json()
 
             self.assertEqual({'result': 'not-on-board'}, data)
 
             # POST with invalid word
-            repsonse_score = client.post("/api/score-word",
-                                         json={'word': 'FDGHSJ',
-                                               'game_id': game_id})
-            data = repsonse_score.get_json()
+            repsonse = client.post("/api/score-word",
+                                   json={'word': 'FDGHSJ',
+                                         'game_id': game_id})
+            data = repsonse.get_json()
 
             self.assertEqual({'result': 'not-word'}, data)
 
