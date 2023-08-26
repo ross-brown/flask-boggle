@@ -31,12 +31,12 @@ function displayBoard(board) {
   // loop over board and create the DOM tr/td structure
   const $tBody = $("<tbody>");
 
-  for (let rowIdx = 0; rowIdx < board.length; rowIdx++) {
+  for (let row of board) {
 
     const $tr = $("<tr>");
-    for (let letterIdx = 0; letterIdx < board[0].length; letterIdx++) {
+    for (let letter of row) {
 
-      $tr.append($("<td>").text(board[rowIdx][letterIdx]));
+      $tr.append($("<td>").text(letter));
     }
     $tBody.append($tr);
   }
@@ -48,10 +48,7 @@ function displayBoard(board) {
 function addWordToList(word, score) {
   $playedWords.append($("<li>", { text: word.toUpperCase() }));
 
-
   let currentScore = Number($currentScore.text());
-
-  console.log("currentScore is", currentScore);
 
   currentScore += score;
 
@@ -85,11 +82,11 @@ async function handleSumbit(evt) {
     }
   });
 
-  const data = await response.json();
+  const { result, score } = await response.json();
 
-  if (data.result === 'ok') addWordToList(word, data.score);
+  if (result === 'ok') addWordToList(word, score);
 
-  displayMessage(data.result);
+  displayMessage(result);
 
   $wordInput.val("");
 }
