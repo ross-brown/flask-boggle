@@ -66,7 +66,7 @@ class BoggleAppTestCase(TestCase):
             # POST with valid word
             repsonse = client.post("/api/score-word",
                                    json={'word': 'GOT',
-                                         'game_id': game_id})
+                                         'gameId': game_id})
             data = repsonse.get_json()
 
             self.assertEqual({'result': 'ok'}, data)
@@ -74,7 +74,7 @@ class BoggleAppTestCase(TestCase):
             # POST with valid word NOT on board
             repsonse = client.post("/api/score-word",
                                    json={'word': 'RUN',
-                                         'game_id': game_id})
+                                         'gameId': game_id})
             data = repsonse.get_json()
 
             self.assertEqual({'result': 'not-on-board'}, data)
@@ -82,7 +82,7 @@ class BoggleAppTestCase(TestCase):
             # POST with invalid word
             repsonse = client.post("/api/score-word",
                                    json={'word': 'FDGHSJ',
-                                         'game_id': game_id})
+                                         'gameId': game_id})
             data = repsonse.get_json()
 
             self.assertEqual({'result': 'not-word'}, data)
